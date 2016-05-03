@@ -1,0 +1,4 @@
+*.m
+*.txt
+*.fig
+!drawTeapot.m
