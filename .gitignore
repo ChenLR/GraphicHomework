@@ -1,4 +1,6 @@
+.gitignore
 *.m
 *.txt
 *.fig
 !drawTeapot.m
+!drawChar.m
