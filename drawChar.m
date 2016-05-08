@@ -1,10 +1,27 @@
-function opt = drawChar(src, char)
-x_offset = 0;
-y_offset = 0;
-scale = 1;
+function opt = drawChar(src, char, scale, blur, x_offset, y_offset)
+% 输入：
+% src   原图
+% char  中文字符
+% scale 显示比例
+% blur  是否进行高斯滤波
+if nargin == 2
+    x_offset = 0;
+    y_offset = 0;
+    scale = 1;
+    blur = 0;
+elseif nargin == 3
+    x_offset = 0;
+    y_offset = 0;
+    blur = 0;
+elseif nargin == 4
+    x_offset = 0;
+    y_offset = 0;
+end
 
 opt = src;
 
+% 读取点阵数据
+% 每个24x24的点阵字符对应72byte数据 24*24/8 = 72
 incode = unicode2native(char);
 qh = int32(incode(1) - hex2dec('a0')); % 区码
 wh = int32(incode(2) - hex2dec('a0')); % 位码
@@ -28,4 +45,11 @@ for j = 0:24 - 1
         end
     end
 end
+
+if blur
+    gFilter = fspecial('gaussian',(scale*2 + 1) * [1 1],0.6 * scale^0.8);
+    opt=imfilter(opt,gFilter,'replicate');
+    opt=opt / max(max(opt)) * 255;
+end
+
 fclose(HZK);

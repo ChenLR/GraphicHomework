@@ -2,5 +2,8 @@
 *.m
 *.txt
 *.fig
+*.asv
 !drawTeapot.m
 !drawChar.m
+!charlib.m
+!test_mouse_track.m
