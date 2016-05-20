@@ -1,9 +1,10 @@
 .gitignore
-*.m
 *.txt
 *.fig
 *.asv
+*.m
 !drawTeapot.m
-!drawChar.m
-!charlib.m
-!test_mouse_track.m
+!gridView.m
+!projection.m
+!rotateModel.m
+!translateModel.m
