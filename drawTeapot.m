@@ -1,5 +1,5 @@
 close all;
-clear all;
+clear;
 
 div1 = 0.2;
 div2 = 0.2;
@@ -151,7 +151,8 @@ surf_spout = clp_spout;
 surf_spout(:,:,4) = 1;
 model = [model {surf_spout}];
 
-%% Total 
+%% Total
+clearvars -except model;
 figure(2);
 model = translateModel(model, [0 -1.5 0]);
 model = rotateModel(model, [30 30 0], [2 1 3]);
