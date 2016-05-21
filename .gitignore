@@ -9,3 +9,7 @@
 !rotateModel.m
 !translateModel.m
 !bresLine.m
+!phong.m
+!render.m
+!teapotModel.m
+!polyFill.m
