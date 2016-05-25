@@ -1,4 +1,7 @@
 function [ opt ] = rotateModel( model, angle, order )
+if nargin == 2;
+    order = [1 2 3];
+end
 mat(:,:,1) = [1 0 0 0;
     0 cosd(angle(1)) -sind(angle(1)) 0;
     0 sind(angle(1)) cosd(angle(1)) 0;

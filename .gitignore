@@ -13,3 +13,5 @@
 !render.m
 !teapotModel.m
 !polyFill.m
+!renderSmooth.m
+!interpolation.m
