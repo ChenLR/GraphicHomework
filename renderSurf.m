@@ -1,38 +1,32 @@
-function [ opt ] = renderSmooth( src, model, light,cam_depth, deg)
+function [ opt, zbuffer ] = renderSurf( src, surf, zbuffer, light,cam_depth, deg )
 [height, width] = size(src);
 opt = src;
-plane = projection(model, cam_depth);
-depth = ones(height, width);
-surf_num = length(model);
-for i_surf = 1:surf_num
-    surf = model{i_surf};
-    view = plane{i_surf};
-    view = view * width / (2 * cam_depth * tand(deg / 2));
-    view(:,:,1) = view(:,:,1) + width / 2;
-    view(:,:,2) = view(:,:,2) + height / 2;
-    [m, n, ~] = size(surf);
-    p_light = lightPoint(surf,light,cam_depth); % 光强控制点
-    for j_ = 1:m - 1
-        for k_ = 1:n - 1
-            VP = [view(j_, k_, 1) view(j_, k_, 2);
-                view(j_+1, k_, 1) view(j_+1, k_, 2);
-                view(j_+1,k_+1,1) view(j_+1,k_+1,2);
-                view(j_,k_+1,1) view(j_,k_+1,2)];
-            SP =  [surf(j_, k_, 1) surf(j_, k_, 2) surf(j_, k_, 3);
-                surf(j_+1, k_, 1) surf(j_+1, k_, 2) surf(j_+1, k_, 3);
-                surf(j_+1,k_+1,1) surf(j_+1,k_+1,2) surf(j_,k_+1,3);
-                surf(j_,k_+1,1) surf(j_,k_+1,2) surf(j_,k_+1,3)];
-            PI = [p_light(j_, k_, 1);
-                p_light(j_+1, k_, 1);
-                p_light(j_+1,k_+1,1);
-                p_light(j_,k_+1,1)];
-            polyFill(VP(:,1),VP(:,2),SP,PI);
-        end
+view = projection({surf}, cam_depth);
+view = view{1};
+view = view * width / (2 * cam_depth * tand(deg / 2));
+view(:,:,1) = view(:,:,1) + width / 2;
+view(:,:,2) = view(:,:,2) + height / 2;
+p_light = lightPoint(surf,light,cam_depth); % 光强控制点
+[m, n, ~] = size(surf);
+for j_ = 1:m - 1
+    for k_ = 1:n - 1
+        VP = [view(j_, k_, 1) view(j_, k_, 2);
+            view(j_+1, k_, 1) view(j_+1, k_, 2);
+            view(j_+1,k_+1,1) view(j_+1,k_+1,2);
+            view(j_,k_+1,1) view(j_,k_+1,2)];
+        SP =  [surf(j_, k_, 1) surf(j_, k_, 2) surf(j_, k_, 3);
+            surf(j_+1, k_, 1) surf(j_+1, k_, 2) surf(j_+1, k_, 3);
+            surf(j_+1,k_+1,1) surf(j_+1,k_+1,2) surf(j_,k_+1,3);
+            surf(j_,k_+1,1) surf(j_,k_+1,2) surf(j_,k_+1,3)];
+        PI = [p_light(j_, k_, 1);
+            p_light(j_+1, k_, 1);
+            p_light(j_+1,k_+1,1);
+            p_light(j_,k_+1,1)];
+        polyFill(VP(:,1),VP(:,2),SP,PI);
     end
 end
 
     function polyFill(Pxd, Pyd,SP,PI)
-        
         Px = round(Pxd(:));
         Py = round(Pyd(:));
         point_num = length(Px);
@@ -62,19 +56,7 @@ end
                     for x = min(allLine(i, 1), allLine(i, 3)):...
                             max(allLine(i, 1), allLine(i, 3));
                         if isQualified([x y_min])
-                            [u,v] = interpolation( [x y_min], Pxd, Pyd);
-                            matrix = [(1 - u)*(1 - v) (u)*(1 - v) ...
-                                (u)*(v) (1 - u)*(v)];
-                            I = real(matrix*PI);
-                            if isnan(I)
-                                
-                            end
-                            center = real(matrix*SP);
-                            dep = 1 - exp(-norm(center - [0 0 cam_depth]));
-                            if dep <= depth(height + 1 - y_min, x)
-                                depth(height + 1 - y_min, x) = dep;
-                                opt(height + 1 - y_min, x) = I;
-                            end
+                            renderPoint(x, y_min, Pxd, Pyd);
                         end
                     end
                 end
@@ -110,24 +92,26 @@ end
             for j = 1:p_num/2
                 for k = round(lines(2*j - 1, 1)):round(lines(2*j, 1))
                     if isQualified([k i])
-                        [u,v] = interpolation( [k i], Pxd, Pyd);
-                            matrix = [(1 - u)*(1 - v) (u)*(1 - v) ...
-                                (u)*(v) (1 - u)*(v)];
-                            I = real(matrix*PI);
-                            if isnan(I)
-                                
-                            end
-                            center = real(matrix*SP);
-                            dep = 1 - exp(-norm(center - [0 0 cam_depth]));
-                        if dep <= depth(height + 1 - i, k)
-                            depth(height + 1 - i, k) = dep;
-                            opt(height + 1 - i, k) = I;
-                        end
+                        renderPoint(k, i, Pxd, Pyd);
                     end
                 end
             end
         end
     end
+
+    function renderPoint(x, y, Pxd, Pyd)
+        [u,v] = interpolation( [x y], Pxd, Pyd);
+        matrix = [(1 - u)*(1 - v) (u)*(1 - v) ...
+            (u)*(v) (1 - u)*(v)];
+        I = real(matrix*PI);
+        center = real(matrix*SP);
+        dep = 1 - exp(-norm(center - [0 0 cam_depth]));
+        if dep <= zbuffer(height + 1 - y, x)
+            zbuffer(height + 1 - y, x) = dep;
+            opt(height + 1 - y, x) = I;
+        end
+    end
+
     function bool = isQualified(P)
         if P(1) <= 0 || P(1) > width ||...
                 P(2) <= 0 || P(2) > height
