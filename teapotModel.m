@@ -44,6 +44,7 @@ surf_body(:,:,4) = ones(height, depth);
 model = [model {surf_body}];
 
 % lid
+cp_lid(1,1) = 0.001;
 p_lid = [A * B * cp_lid(1:4,:);
     A * B * cp_lid(4:7,:)];
 [height,~] = size(p_lid);
