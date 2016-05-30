@@ -1,9 +1,16 @@
-function [ opt ] = renderSmooth( src, model, light,cam_depth, deg)
+function [ opt ] = renderTexture( src, model, light,cam_depth, deg, text)
 [height, width] = size(src);
 opt = src;
 plane = projection(model, cam_depth);
 depth = ones(height, width);
 surf_num = length(model);
+x_base = 0.39; % 向下
+y_base = 0.2; %顺时针旋转
+x_scaler = 1000;
+y_scaler = 1300;
+text = text / max(max(text));
+text = text';
+[y_limit, x_limit] = size(text);
 for i_surf = 1:surf_num
     surf = model{i_surf};
     view = plane{i_surf};
@@ -30,6 +37,7 @@ for i_surf = 1:surf_num
         end
     end
 end
+opt(opt < 0) = 0;
 
     function polyFill(Pxd, Pyd,SP,PI)
         
@@ -69,6 +77,19 @@ end
                             if isnan(I)
                                 
                             end
+                            if i_surf == 1
+                                %原图坐标
+                                origin_x = ((j_ + u)/m - x_base)*x_scaler;
+                                origin_y = ((k_ + v)/n - y_base)*y_scaler;
+                                origin_x = round(origin_x);
+                                origin_y = round(origin_y);
+                                if origin_x > 0 && origin_x <= x_limit ...
+                                        && origin_y > 0 && ...
+                                        origin_y <= y_limit;
+                                    I = I * text(y_limit+1 - origin_y, ...
+                                        origin_x);
+                                end
+                            end                               
                             center = real(matrix*SP);
                             dep = 1 - exp(-norm(center - [0 0 cam_depth]));
                             if dep <= depth(height + 1 - y_min, x)
@@ -117,6 +138,19 @@ end
                             if isnan(I)
                                 
                             end
+                            if i_surf == 1
+                                %原图坐标
+                                origin_x = ((j_ + u)/m - x_base)*x_scaler;
+                                origin_y = ((k_ + v)/n - y_base)*y_scaler;
+                                origin_x = round(origin_x);
+                                origin_y = round(origin_y);
+                                if origin_x > 0 && origin_x <= x_limit ...
+                                        && origin_y > 0 && ...
+                                        origin_y <= y_limit;
+                                    I = I * text(y_limit+1 - origin_y, ...
+                                        origin_x);
+                                end
+                            end
                             center = real(matrix*SP);
                             dep = 1 - exp(-norm(center - [0 0 cam_depth]));
                         if dep <= depth(height + 1 - i, k)
@@ -136,6 +170,4 @@ end
             bool = 1;
         end
     end
-
 end
-

@@ -1,8 +1,8 @@
 function [ model ] = teapotModel( div1, div2, div3, detail)
 if nargin < 3
-    div1 = 0.02;
-    div2 = 0.02;
-    div3 = 2 * pi/400;
+    div1 = 0.05;
+    div2 = 0.05;
+    div3 = 2 * pi/100;
 end
 if nargin < 4
     detail = 0;

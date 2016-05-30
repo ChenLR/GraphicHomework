@@ -13,5 +13,8 @@
 !render.m
 !teapotModel.m
 !polyFill.m
-!renderSmooth.m
 !interpolation.m
+!lightPoint.m
+!potgui.m
+!renderSurfaces.m
+!renderTexture.m

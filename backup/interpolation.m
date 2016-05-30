@@ -1,5 +1,4 @@
 function [u,v] = interpolation( P, Px, Py)
-
 a = (Px(3) - Px(4)) * (Py(2) - Py(1)) - ...
     (Px(2) - Px(1)) * (Py(3) - Py(4));
 b = Py(1) * (Px(3) - Px(4)) + Px(4) * (Py(2) - Py(1)) ...
@@ -58,20 +57,6 @@ else
     end
 end
 
-% P = P(:);
-% Px = Px(:);
-% Py = Py(:);
-% P(1) = P(1) - Px(4);
-% Px = Px - Px(4);
-% P(2) = P(2) - Py(4);
-% Py = Py - Py(4);
-% Px = Px';
-% Py = Py';
-% T = [0 1 1;1 1 0] / ([Px(1:3); Py(1:3)]);
-% P_ = T * P;
-% u = P_(1);
-% v = 1 - P_(2);
-
 t = 1;
 if (u - 0.5) > t
     u = 0.5 + t;
@@ -83,6 +68,7 @@ if (v - 0.5) > t
 elseif (v - 0.5) < -t
     v = 0.5 - t;
 end
+
 
 end
 
