@@ -12,7 +12,6 @@
 !phong.m
 !render.m
 !teapotModel.m
-!polyFill.m
 !interpolation.m
 !lightPoint.m
 !potgui.m
