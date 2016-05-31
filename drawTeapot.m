@@ -15,7 +15,7 @@ model = rotateModel(model, [30 30 0], [2 1 3]);
 mat = render(zeros(600,800),model,light,5,90);
 imshow(mat, [0 150]);
 
-%% smooth
+%% texture
 figure;
 light = [0 0 10];
 model = teapotModel();
@@ -23,5 +23,5 @@ model = translateModel(model, [0 -1.5 0]);
 model = rotateModel(model, [30 30 0], [2 1 3]);
 texture = imread('name.PNG');
 texture = rgb2gray(texture);
-mat = renderTexture(zeros(600,800),model,light,5,90,texture);
+mat = renderSurfaces(zeros(600,800),model,light,5,90);
 imshow(mat, [0 150]);

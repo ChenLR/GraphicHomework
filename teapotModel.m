@@ -41,6 +41,7 @@ for i = 0:div3:2*pi
 end
 surf_body = permute(surf_body, [1 3 2]);
 surf_body(:,:,4) = ones(height, depth);
+surf_body = permute(surf_body, [2 1 3]);
 model = [model {surf_body}];
 
 % lid
@@ -64,6 +65,7 @@ for i = 0:div3:2*pi
 end
 surf_lid = permute(surf_lid, [1 3 2]);
 surf_lid(:,:,4) = ones(height, depth);
+surf_lid = permute(surf_lid, [2 1 3]);
 model = [model {surf_lid}];
 
 % handle
@@ -132,8 +134,6 @@ model = [model {surf_spout}];
 
 % Total
 if detail
-    
-    figure;
     subplot(2,2,1);
     title('body');
     hold on;

@@ -1,10 +1,10 @@
 function [ opt ] = bresLine( src,P1,P2)
 [h, w] = size(src);
-P1 = round(P1);
-P2 = round(P2);
-opt = src;
-dx = abs(P1(1) - P2(1));
-dy = abs(P1(2) - P2(2));
+P1 = int32(round(P1));
+P2 = int32(round(P2));
+opt = (src);
+dx = int32(abs(P1(1) - P2(1)));
+dy = int32(abs(P1(2) - P2(2)));
 up = (P1(1) - P2(1))*(P1(2) - P2(2)) >= 0;
 
 if dy <= dx

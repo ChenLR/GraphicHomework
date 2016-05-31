@@ -1,10 +1,11 @@
 function I = phong(P, depth, light, Ia, Ip, Ka, Kd, Ks, Kn, a, b, c)
 if nargin <= 3
+    scaler = 170;
     Ia = 10;
     Ip = 400;
-    Ka = 0.4;
-    Kd = 0.8;
-    Ks = 0.1;
+    Ka = 0.4/scaler;
+    Kd = 0.8/scaler;
+    Ks = 0.1/scaler;
     Kn = 10;
 end
 if nargin <= 9
@@ -15,8 +16,8 @@ end
 % P的行向量为一个点
 center = [(P(1,1)+P(2,1)+P(3,1))/3 (P(1,2)+P(2,2)+P(3,2))/3 ...
     (P(1,3)+P(2,3)+P(3,3))/3];
-in = center - light;
-view = [0 0 depth] - center;
+in = center - light; %光源到面
+view = [0 0 depth] - center; %面到相机
 d = norm(in);
 n = cross((P(2,:) - P(1,:)),(P(3,:) - P(1,:)));
 n = n / norm(n);
@@ -31,7 +32,8 @@ Ic = Ia * Ka;
 Id = fd * Ip * Kd * cos_theta;
 Is = fd * Ip * Ks * cos_alpha.^Kn;
 if (view(1)*n(1) + view(2)*n(2) + view(3)*n(3)) * ...
-        (in(1)*n(1) + in(2)*n(2) + in(3)*n(3)) >= 0;
+        (in(1)*n(1) + in(2)*n(2) + in(3)*n(3)) >= 0 || ...
+    (view(1)*n(1) + view(2)*n(2) + view(3)*n(3)) <= 0
     I = Ic;
 else
     I = Ic + Id + Is;

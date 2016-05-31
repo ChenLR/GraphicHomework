@@ -1,4 +1,12 @@
-function [ opt, zbuffer ] = renderSurf( src, surf, zbuffer, light,cam_depth, deg )
+function [ opt, zbuffer ] = renderSurfT( src, surf, zbuffer, light, ...
+    cam_depth, deg, text, x_base, y_base, x_ratio, y_ratio)
+if nargin == 7
+    x_base = 0.15; %顺时针旋转
+    y_base = 0.4; % 向下
+    x_ratio = 0.1;
+    y_ratio = 0.1;
+end
+
 [height, width, ~] = size(src);
 opt = src;
 view = projection({surf}, cam_depth);
@@ -8,6 +16,9 @@ view(:,:,1) = view(:,:,1) + width / 2;
 view(:,:,2) = view(:,:,2) + height / 2;
 p_light = lightPoint(surf,light,cam_depth); % 光强控制点
 [m, n, ~] = size(surf);
+text = double(text) / 255.0;
+[y_limit, x_limit, ~] = size(text);
+
 for j_ = 1:m - 1
     for k_ = 1:n - 1
         VP = [view(j_, k_, 1) view(j_, k_, 2);
@@ -104,11 +115,21 @@ end
         matrix = [(1 - u)*(1 - v) (u)*(1 - v) ...
             (u)*(v) (1 - u)*(v)];
         I = real(matrix*PI);
-        center = real(matrix*SP);
-        dep = 1 - exp(-norm(center - [0 0 cam_depth]));
-        if dep <= zbuffer(height + 1 - y, x)
-            zbuffer(height + 1 - y, x) = dep;
-            opt(height + 1 - y, x, :) = I;
+        origin_x = ((j_ + u)/m - x_base)*x_limit/x_ratio;
+        origin_y = ((k_ + v)/n - y_base)*y_limit/y_ratio;
+        origin_x = round(origin_x);
+        origin_y = round(origin_y);
+        if origin_x > 0 && origin_x <= x_limit ...
+                && origin_y > 0 && ...
+                origin_y <= y_limit;
+            I = I * text(origin_y, ...
+                x_limit+1 - origin_x,:);
+            center = real(matrix*SP);
+            dep = 1 - exp(-norm(center - [0 0 cam_depth]));
+            if dep <= zbuffer(height + 1 - y, x)
+                zbuffer(height + 1 - y, x) = dep;
+                opt(height + 1 - y, x,:) = I;
+            end
         end
     end
 
@@ -120,6 +141,4 @@ end
             bool = 1;
         end
     end
-
 end
-

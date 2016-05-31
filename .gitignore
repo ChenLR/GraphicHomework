@@ -18,3 +18,5 @@
 !renderSurfaces.m
 !renderTexture.m
 !renderSurf.m
+!renderSurfT.m
+!facedetect.m
